@@ -166,34 +166,4 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.errorDescription").value("이미 가입된 이메일입니다."));
     }
 
-    @Test
-    @DisplayName("회원가입 실패 테스트 - 중복 닉네임")
-    public void duplicatedName() throws Exception{
-        //given
-        MemberRegisterRequest registerRequest = new MemberRegisterRequest(
-                "test@naver.com",
-                "테스트유저",
-                "12345678"
-        );
-
-        mockMvc.perform(post("/members/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andDo(print())
-                .andExpect(status().isCreated());
-        //when
-        MemberRegisterRequest duplicateRequest = new MemberRegisterRequest(
-                "test2@naver.com",
-                "테스트유저",
-                "12345678"
-        );
-        //then
-        mockMvc.perform(post("/members/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(duplicateRequest)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("-101"))
-                .andExpect(jsonPath("$.errorDescription").value("이미 존재하는 닉네임입니다."));
-    }
 }

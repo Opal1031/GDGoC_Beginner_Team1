@@ -1,6 +1,8 @@
 package com.example.StudyBoard.entity;
 
 import com.example.StudyBoard.constant.BoardStatus;
+import com.example.StudyBoard.exception.BusinessException;
+import com.example.StudyBoard.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

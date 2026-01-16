@@ -25,9 +25,6 @@ public class MemberService {
             throw new BusinessException(ErrorCode.DUPLICATED_EMAIL);
         }
 
-        if(memberRepository.existsByName(request.name())) {
-            throw new BusinessException(ErrorCode.DUPLICATED_NAME);
-        }
         Member member = new Member(request.email(), request.name(), passwordEncoder.encode(request.password()), Role.USER);
         memberRepository.save(member);
     }
