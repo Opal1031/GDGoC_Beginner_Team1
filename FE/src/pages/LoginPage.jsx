@@ -25,10 +25,10 @@ function LoginPage() {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API_BASE_URL}/members/login`, {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ loginEmail: email, password }),
       });
 
       let data = null;
@@ -109,7 +109,7 @@ function LoginPage() {
             type="button"
             onClick={() => navigate("/")}
           >
-            메인으로 돌아가기
+            홈으로 돌아가기
           </button>
         </div>
       </form>
