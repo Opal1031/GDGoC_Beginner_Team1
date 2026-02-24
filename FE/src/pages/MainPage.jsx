@@ -15,6 +15,8 @@ function MainPage() {
     maxMembers: 6,
     recruitmentStartDate: "",
     recruitmentEndDate: "",
+    studyStartDate: "",
+    studyEndDate: "",
   });
 
   //화면에 보여줄 모집글 목록 데이터
@@ -115,7 +117,7 @@ function MainPage() {
     }
   };
 
-  //글 작성 등록 버튼 클릭 핸들러 
+  //글 작성 등록 버튼 클릭 핸들러
   const handleCreateStudy = async () => {
     if (!user) {
       alert("로그인 후 작성할 수 있습니다.");
@@ -132,14 +134,22 @@ function MainPage() {
     if (!form.recruitmentEndDate) return alert("모집 종료일을 입력하세요.");
     if (form.recruitmentEndDate < form.recruitmentStartDate)
       return alert("모집 종료일은 시작일 이후여야 해요.");
+        if (!form.studyStartDate) return alert("스터디 시작일을 입력하세요.");
+    if (!form.studyEndDate) return alert("스터디 종료일을 입력하세요.");
+    if (form.studyEndDate < form.studyStartDate)
+      return alert("스터디 종료일은 시작일 이후여야 해요.");
+    if (form.recruitmentEndDate > form.studyStartDate)
+      return alert("스터디 시작일은 모집 종료일 이후여야 해요.");
 
     try {
       const payload = {
         title: form.title,
-        content: form.description,                  
-        capacity: Number(form.maxMembers),         
+        content: form.description,
+        capacity: Number(form.maxMembers),
         recruitmentStartDate: `${form.recruitmentStartDate}T00:00:00`,
         recruitmentEndDate: `${form.recruitmentEndDate}T23:59:59`,
+        studyStartDate: `${form.studyStartDate}T00:00:00`,
+        studyEndDate: `${form.studyEndDate}T23:59:59`,
       };
 
       await apiFetch("/boards/create", {
@@ -174,11 +184,13 @@ function MainPage() {
 
       setCreateOpen(false);
       setForm({
-         title: "", 
-         description: "", 
-         maxMembers: 6, 
+         title: "",
+         description: "",
+         maxMembers: 6,
          recruitmentStartDate: "",
-         recruitmentEndDate: "",});
+         recruitmentEndDate: "",
+         studyStartDate: "",
+         studyEndDate: "",});
 
       alert("모집글이 등록되었습니다!");
     } catch (e) {
@@ -363,6 +375,32 @@ function MainPage() {
                   />
                 </div>
 
+                {/* 스터디 시작일 */}
+                <div className="form-row">
+                  <div className="form-label">스터디 시작일</div>
+                  <input
+                    type="date"
+                    value={form.studyStartDate}
+                    onChange={(e) =>
+                      setForm({ ...form, studyStartDate: e.target.value })
+                    }
+                    className="form-input"
+                  />
+                </div>
+
+                {/* 스터디 종료일 */}
+                <div className="form-row">
+                  <div className="form-label">스터디 종료일</div>
+                  <input
+                    type="date"
+                    value={form.studyEndDate}
+                    onChange={(e) =>
+                      setForm({ ...form, studyEndDate: e.target.value })
+                    }
+                    className="form-input"
+                  />
+                </div>
+
 
                 <div className="modal-actions">
                   <button onClick={handleCreateStudy} className="btn btn-primary">등록</button>
@@ -376,6 +414,8 @@ function MainPage() {
                         maxMembers: 6,
                         recruitmentStartDate: "",
                         recruitmentEndDate: "",
+                        studyStartDate: "",
+                        studyEndDate: "",
                       });
                     }}
                     className="btn btn-secondary"
