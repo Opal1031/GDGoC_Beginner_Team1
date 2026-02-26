@@ -5,7 +5,7 @@ import com.example.StudyBoard.board.dto.request.BoardEditRequest;
 import com.example.StudyBoard.board.dto.response.BoardResponse;
 import com.example.StudyBoard.board.entity.Board;
 import com.example.StudyBoard.board.repository.BoardRepository;
-import com.example.StudyBoard.constant.BoardStatus; // Import 추가됨
+import com.example.StudyBoard.constant.BoardStatus;
 import com.example.StudyBoard.exception.BusinessException;
 import com.example.StudyBoard.exception.ErrorCode;
 import com.example.StudyBoard.member.entity.Member;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Pageable;
-import java.time.LocalDateTime; // Import 추가됨
 
 @Service
 @RequiredArgsConstructor
@@ -37,10 +36,10 @@ public class BoardService {
                 request.getTitle(),
                 request.getCapacity(),
                 request.getContent(),
-                request.getRecruitmentStartDate(),
-                request.getRecruitmentEndDate(),
-                request.getStudyStartDate(),
-                request.getStudyEndDate()
+                request.getRecruitmentStartDate().atStartOfDay(),
+                request.getRecruitmentEndDate().atTime(23, 59, 59),
+                request.getStudyStartDate().atStartOfDay(),
+                request.getStudyEndDate().atTime(23, 59, 59)
         );
 
         Board savedBoard = boardRepository.save(board);

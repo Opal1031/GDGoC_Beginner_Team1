@@ -132,7 +132,7 @@ public class Board extends BaseEntity {
             throw new BusinessException(ErrorCode.INVALID_STUDY_PERIOD);
         }
 
-        if(recruitEnd.isAfter(studyStart)) {
+        if (studyStart.isBefore(recruitEnd)) {
             throw new BusinessException(ErrorCode.INVALID_PERIOD_SEQUENCE);
         }
         return new Board(member, title, capacity, content, recruitStart, recruitEnd, studyStart, studyEnd);
@@ -162,7 +162,7 @@ public class Board extends BaseEntity {
             throw new BusinessException(ErrorCode.INVALID_STUDY_PERIOD);
         }
 
-        if(recruitEnd.isAfter(studyStart)) {
+        if (studyStart.isBefore(recruitEnd)) {
             throw new BusinessException(ErrorCode.INVALID_PERIOD_SEQUENCE);
         }
 

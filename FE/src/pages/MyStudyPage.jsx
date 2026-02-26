@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { apiFetch } from "../api";
 import "./MyStudyPage.css";
 
+const formatDateOnly = (value) => {
+  if (!value) return "";
+  return String(value).split("T")[0];
+};
+
 const mapBoardToStudy = (b) => ({
   id: b.boardId ?? b.id,
   title: b.title ?? "",
@@ -11,10 +16,16 @@ const mapBoardToStudy = (b) => ({
   maxMembers: b.capacity ?? b.maxMembers ?? 0,
   date:
     b.recruitmentStartDate && b.recruitmentEndDate
-      ? `${b.recruitmentStartDate} ~ ${b.recruitmentEndDate}`
+      ? `${formatDateOnly(b.recruitmentStartDate)} ~ ${formatDateOnly(b.recruitmentEndDate)}`
       : "",
   status: b.status === "RECRUITING" ? "모집중" : "모집완료"
 });
+
+const extractBoardList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.content)) return data.content;
+  return [];
+};
 
 const MyStudyPage = () => {
   const [studies, setStudies] = useState([]);
@@ -23,8 +34,8 @@ const MyStudyPage = () => {
   useEffect(() => {
     const fetchBoards = async () => {
       try {
-        const data = await apiFetch("/boards/recruiting");
-        const mapped = Array.isArray(data) ? data.map(mapBoardToStudy) : [];
+        const data = await apiFetch("/boards/recruiting", { skipAuth: true });
+        const mapped = extractBoardList(data).map(mapBoardToStudy);
         setStudies(mapped);
       } catch (e) {
         setStudies([]);

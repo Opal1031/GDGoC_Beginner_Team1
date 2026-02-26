@@ -64,7 +64,7 @@ class BoardServiceTest {
     }
     //board 생성
     private BoardCreateRequest createBoardRequest(String title, String content, int capacity) {
-        return new BoardCreateRequest(title, content, capacity, FIXED_START, FIXED_END, FIXED_END.plusDays(1),FIXED_END.plusDays(30));
+        return new BoardCreateRequest(title, content, capacity, FIXED_START.toLocalDate(), FIXED_END.toLocalDate(), FIXED_END.plusDays(1).toLocalDate(), FIXED_END.plusDays(30).toLocalDate());
     }
 
     private BoardEditRequest createEditRequest(
@@ -102,8 +102,8 @@ class BoardServiceTest {
         assertThat(response.getTitle()).isEqualTo("test board-1");
         assertThat(response.getContent()).isEqualTo("test -1");
         assertThat(response.getCapacity()).isEqualTo(5);
-        assertThat(response.getRecruitmentStartDate()).isEqualTo(FIXED_START);
-        assertThat(response.getRecruitmentEndDate()).isEqualTo(FIXED_END);
+        assertThat(response.getRecruitmentStartDate()).isEqualTo(FIXED_START.toLocalDate().atStartOfDay());
+        assertThat(response.getRecruitmentEndDate()).isEqualTo(FIXED_END.toLocalDate().atTime(23, 59, 59));
         assertThat(response.getWriterName()).isEqualTo(testMember.getName());
         assertThat(response.getStatus()).isEqualTo(BoardStatus.RECRUITING);
     }
@@ -115,10 +115,10 @@ class BoardServiceTest {
                 "test",
                 "content",
                 5,
-                FIXED_START,
-                FIXED_END,
-                FIXED_END.plusDays(5),
-                FIXED_END.plusDays(1)
+                FIXED_START.toLocalDate(),
+                FIXED_END.toLocalDate(),
+                FIXED_END.plusDays(5).toLocalDate(),
+                FIXED_END.plusDays(1).toLocalDate()
         );
 
         assertThatThrownBy(() -> boardService.create(request, testMember.getMemberId())).isInstanceOf(BusinessException.class).hasFieldOrPropertyWithValue("errorCode",ErrorCode.INVALID_STUDY_PERIOD);
@@ -131,10 +131,10 @@ class BoardServiceTest {
                 "test",
                 "content",
                 5,
-                FIXED_START,
-                FIXED_END.plusDays(10),
-                FIXED_END.plusDays(5),
-                FIXED_END.plusDays(30)
+                FIXED_START.toLocalDate(),
+                FIXED_END.plusDays(10).toLocalDate(),
+                FIXED_END.plusDays(5).toLocalDate(),
+                FIXED_END.plusDays(30).toLocalDate()
         );
 
         assertThatThrownBy(() -> boardService.create(request, testMember.getMemberId())).isInstanceOf(BusinessException.class).hasFieldOrPropertyWithValue("errorCode",ErrorCode.INVALID_PERIOD_SEQUENCE);

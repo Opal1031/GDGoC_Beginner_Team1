@@ -35,12 +35,18 @@ function MainPage() {
     }
   }, []);
 
+  const extractBoardList = (data) => {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.content)) return data.content;
+    return [];
+  };
+
   // 모집글 목록 불러오기 (백엔드 연동 시 사용)
   useEffect(() => {
     const fetchBoards = async () => {
       try {
-        const data = await apiFetch("/boards/recruiting");
-        const mapped = Array.isArray(data) ? data.map(mapBoardToStudy) : [];
+        const data = await apiFetch("/boards/recruiting", { skipAuth: true });
+        const mapped = extractBoardList(data).map(mapBoardToStudy);
         // 서버에서 받아온 결과를 반영합니다. 빈 배열이면 화면을 비워둡니다.
         setStudies(mapped);
       } catch (e) {
@@ -61,6 +67,11 @@ function MainPage() {
     navigate("/");
 };
 
+  const formatDateOnly = (value) => {
+    if (!value) return "";
+    return String(value).split("T")[0];
+  };
+
   const mapBoardToStudy = (b) => ({
     id: b.boardId ?? b.id,
     title: b.title ?? "",
@@ -70,7 +81,7 @@ function MainPage() {
     maxMembers: b.capacity ?? b.maxMembers ?? 0,
     date:
       b.recruitmentStartDate && b.recruitmentEndDate
-        ? `${b.recruitmentStartDate} ~ ${b.recruitmentEndDate}`
+        ? `${formatDateOnly(b.recruitmentStartDate)} ~ ${formatDateOnly(b.recruitmentEndDate)}`
         : "",
     status: b.status === "RECRUITING" ? "모집중":"모집완료"
   });
@@ -117,7 +128,7 @@ function MainPage() {
     }
   };
 
-  //글 작성 등록 버튼 클릭 핸들러
+  //글 작성 등록 버튼 클릭 핸들러 
   const handleCreateStudy = async () => {
     if (!user) {
       alert("로그인 후 작성할 수 있습니다.");
@@ -144,8 +155,8 @@ function MainPage() {
     try {
       const payload = {
         title: form.title,
-        content: form.description,
-        capacity: Number(form.maxMembers),
+        content: form.description,                  
+        capacity: Number(form.maxMembers),         
         recruitmentStartDate: `${form.recruitmentStartDate}T00:00:00`,
         recruitmentEndDate: `${form.recruitmentEndDate}T23:59:59`,
         studyStartDate: `${form.studyStartDate}T00:00:00`,
@@ -173,10 +184,10 @@ function MainPage() {
 
       // 서버에서 최신 목록을 받아오면 화면을 갱신합니다. 서버가 빈 배열이면 로컬 상태를 유지합니다.
       try {
-        const latest = await apiFetch("/boards/recruiting");
-        const mappedLatest = Array.isArray(latest) ? latest.map(mapBoardToStudy) : [];
-        // 성공적으로 가져온 경우 서버 상태와 항상 동기화합니다.
-        setStudies(mappedLatest);
+        const latest = await apiFetch("/boards/recruiting", { skipAuth: true });
+        const mappedLatest = extractBoardList(latest).map(mapBoardToStudy);
+        // 서버가 빈 배열을 반환하더라도 방금 추가한 로컬 항목은 유지합니다.
+        setStudies((prev) => (mappedLatest.length > 0 ? mappedLatest : prev));
       } catch (e) {
         console.error("Failed to refresh studies after create:", e);
         // 네트워크 실패 시 추가한 로컬 항목은 유지합니다.
@@ -184,9 +195,9 @@ function MainPage() {
 
       setCreateOpen(false);
       setForm({
-         title: "",
-         description: "",
-         maxMembers: 6,
+         title: "", 
+         description: "", 
+         maxMembers: 6, 
          recruitmentStartDate: "",
          recruitmentEndDate: "",
          studyStartDate: "",

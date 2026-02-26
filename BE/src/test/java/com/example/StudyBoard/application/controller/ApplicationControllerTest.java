@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,7 +61,7 @@ public class ApplicationControllerTest {
 
         String accessToken = objectMapper.readTree(loginResponse).get("accessToken").asText();
 
-        BoardCreateRequest boardCreateRequest = new BoardCreateRequest("신청 대상 스터디", "내용", 5, LocalDateTime.now(), LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(4), LocalDateTime.now().plusDays(30));
+        BoardCreateRequest boardCreateRequest = new BoardCreateRequest("신청 대상 스터디", "내용", 5, LocalDate.now(), LocalDate.now().plusDays(3), LocalDate.now().plusDays(4), LocalDate.now().plusDays(30));
         String boardResponse = mockMvc.perform(post("/boards/create")
                             .header("Authorization", "Bearer " + accessToken)
                             .contentType(MediaType.APPLICATION_JSON)
